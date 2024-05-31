@@ -25,9 +25,11 @@ class test_Amenity(test_basemodel):
 
     def test_name2(self):
         """
-        Test case to verify the type of the 'name' attribute of an Amenity instance.
+        Test case to verify the type of the 'name' attribute of an Amenity\
+            instance.
 
-        It creates a new instance of the Amenity class using the 'value' method,
+        It creates a new instance of the Amenity class using the 'value'\
+            method,
         and then asserts that the type of the 'name' attribute is a string.
         """
         new = self.value()

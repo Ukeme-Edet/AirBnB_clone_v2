@@ -31,7 +31,7 @@ class test_basemodel(unittest.TestCase):
         """Tear down method that runs after each test."""
         try:
             os.remove("file.json")
-        except:
+        except FileNotFoundError:
             pass
 
     def test_default(self):
@@ -47,7 +47,8 @@ class test_basemodel(unittest.TestCase):
         self.assertNotEqual(i, new)
 
     def test_kwargs_int(self):
-        """Test creating an instance of BaseModel with invalid keyword arguments."""
+        """Test creating an instance of BaseModel with invalid keyword\
+            arguments."""
         i = self.value()
         copy = i.to_dict()
         copy.update({1: 2})
@@ -77,13 +78,15 @@ class test_basemodel(unittest.TestCase):
         self.assertEqual(i.to_dict(), n)
 
     def test_kwargs_none(self):
-        """Test creating an instance of BaseModel with None as a keyword argument."""
+        """Test creating an instance of BaseModel with None as a keyword\
+            argument."""
         n = {None: None}
         with self.assertRaises(TypeError):
             new = self.value(**n)
 
     def test_kwargs_one(self):
-        """Test creating an instance of BaseModel with a missing keyword argument."""
+        """Test creating an instance of BaseModel with a missing keyword\
+            argument."""
         n = {"Name": "test"}
         with self.assertRaises(KeyError):
             new = self.value(**n)

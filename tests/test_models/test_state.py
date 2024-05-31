@@ -21,7 +21,8 @@ class test_state(test_basemodel):
 
     def test_name3(self):
         """
-        Test case to check the type of the 'name' attribute of a new State instance.
+        Test case to check the type of the 'name' attribute of a new State\
+            instance.
         """
         new = self.value()
         self.assertEqual(type(new.name), str)

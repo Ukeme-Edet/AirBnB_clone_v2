@@ -12,6 +12,7 @@ import datetime
 from uuid import UUID
 import json
 import os
+from models import storage
 
 
 class test_basemodel(unittest.TestCase):
@@ -108,3 +109,54 @@ class test_basemodel(unittest.TestCase):
         n = new.to_dict()
         new = BaseModel(**n)
         self.assertNotEqual(new.created_at, new.updated_at)
+
+    def test_init_no_args(self):
+        """Test initializing BaseModel with no arguments."""
+        i = self.value()
+        self.assertIsNotNone(i.id)
+        self.assertIsNotNone(i.created_at)
+        self.assertIsNotNone(i.updated_at)
+
+    def test_init_with_args(self):
+        """Test initializing BaseModel with arguments."""
+        id = "123"
+        created_at = datetime.now()
+        updated_at = datetime.now()
+        i = self.value(id=id, created_at=created_at, updated_at=updated_at)
+        self.assertEqual(i.id, id)
+        self.assertEqual(i.created_at, created_at)
+        self.assertEqual(i.updated_at, updated_at)
+
+    def test_str_representation(self):
+        """Test the string representation of BaseModel."""
+        i = self.value()
+        expected_str = "[{}] ({}) {}".format(self.name, i.id, i.__dict__)
+        self.assertEqual(str(i), expected_str)
+
+    def test_save_updates_updated_at(self):
+        """Test that the save method updates the updated_at attribute."""
+        i = self.value()
+        old_updated_at = i.updated_at
+        i.save()
+        self.assertNotEqual(i.updated_at, old_updated_at)
+
+    def test_to_dict_returns_dict(self):
+        """Test that the to_dict method returns a dictionary."""
+        i = self.value()
+        d = i.to_dict()
+        self.assertIsInstance(d, dict)
+
+    def test_to_dict_contains_attributes(self):
+        """Test that the to_dict method contains the object's attributes."""
+        i = self.value()
+        d = i.to_dict()
+        self.assertIn("id", d)
+        self.assertIn("created_at", d)
+        self.assertIn("updated_at", d)
+
+    def test_delete(self):
+        """Test the delete method of BaseModel."""
+        i = self.value()
+        i.save()
+        i.delete()
+        self.assertIsNone(storage.get(self.name, i.id))

@@ -26,3 +26,17 @@ class test_state(test_basemodel):
         """
         new = self.value()
         self.assertEqual(type(new.name), str)
+
+    def test_name(self):
+        """
+        Test case to check the type of the 'name' attribute of a new State instance.
+        """
+        new_state = State()
+        self.assertEqual(type(new_state.name), str)
+
+    def test_cities(self):
+        """
+        Test case to check the type of the 'cities' attribute of a new State instance.
+        """
+        new_state = State()
+        self.assertIsInstance(new_state.cities, list)

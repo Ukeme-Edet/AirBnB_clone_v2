@@ -1,12 +1,12 @@
 #!/usr/bin/python3
 """This module defines a class User"""
 from sqlalchemy import Column, String
-from models.base_model import BaseModel
+from models.base_model import Base, BaseModel
 
 
-class User(BaseModel):
+class User(BaseModel, Base):
     """
-    Represents a user in the system.
+    User class represents a user in the system.
 
     Attributes:
         email (str): The email address of the user.

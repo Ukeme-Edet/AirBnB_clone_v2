@@ -1,5 +1,20 @@
 #!/usr/bin/python3
-"""This module defines a base class for all models in our hbnb clone"""
+"""
+This module contains the BaseModel class, which serves as the base class for all models in the application.
+
+Attributes:
+    id (str): The unique identifier for the model instance.
+    created_at (datetime): The datetime when the model instance was created.
+    updated_at (datetime): The datetime when the model instance was last updated.
+
+Methods:
+    __init__(self, *args, **kwargs): Initializes a new instance of the BaseModel class.
+    __str__(self): Returns a string representation of the BaseModel instance.
+    save(self): Saves the BaseModel instance to the database.
+    to_dict(self): Converts the BaseModel instance to a dictionary.
+    delete(self): Deletes the BaseModel instance from the database.
+"""
+
 import uuid
 from datetime import datetime
 from sqlalchemy import Column, DateTime, String
@@ -9,16 +24,23 @@ Base = declarative_base()
 
 
 class BaseModel:
-    """A base class for all hbnb models"""
+    """
+    Represents the base model for all other models in the application.
+
+    Attributes:
+        id (str): The unique identifier for the model instance.
+        created_at (datetime): The timestamp indicating when the instance was created.
+        updated_at (datetime): The timestamp indicating when the instance was last updated.
+    """
 
     from datetime import timezone
 
-    id = Column(String(60), primary_key=True, nullable=False)
+    id = Column(String(60), unique=True, primary_key=True, nullable=False)
     created_at = Column(
-        DateTime, nullable=False, default=datetime.now(timezone.utc)
+        DateTime, default=datetime.now(timezone.utc()), nullable=False
     )
     updated_at = Column(
-        DateTime, nullable=False, default=datetime.now(timezone.utc)
+        DateTime, default=datetime.now(timezone.utc()), nullable=False
     )
 
     def __init__(self, *args, **kwargs):
@@ -29,67 +51,72 @@ class BaseModel:
             *args: Variable length argument list.
             **kwargs: Arbitrary keyword arguments.
 
-        Returns:
-            None
+        If kwargs is not empty, the instance attributes are set based on the key-value pairs
+        in kwargs. Otherwise, the instance attributes are set with default values.
         """
         if not kwargs:
             self.id = str(uuid.uuid4())
-            self.created_at = datetime.now()
-            self.updated_at = datetime.now()
+            self.created_at = self.updated_at = datetime.now()
         else:
-            kwargs["updated_at"] = datetime.strptime(
-                kwargs["updated_at"], "%Y-%m-%dT%H:%M:%S.%f"
-            )
-            kwargs["created_at"] = datetime.strptime(
-                kwargs["created_at"], "%Y-%m-%dT%H:%M:%S.%f"
-            )
             if "id" not in kwargs:
-                kwargs["id"] = str(uuid.uuid4())
+                self.id = str(uuid.uuid4())
+            if "created_at" in kwargs:
+                kwargs["created_at"] = datetime.strptime(
+                    kwargs["created_at"], "%Y-%m-%dT%H:%M:%S.%f"
+                )
+            else:
+                kwargs["created_at"] = datetime.now()
+            if "updated_at" in kwargs:
+                kwargs["updated_at"] = datetime.strptime(
+                    kwargs["updated_at"], "%Y-%m-%dT%H:%M:%S.%f"
+                )
+            else:
+                kwargs["updated_at"] = datetime.now()
+            if "__class__" in kwargs:
+                del kwargs["__class__"]
             self.__dict__.update(kwargs)
 
     def __str__(self):
         """
-        Returns a string representation of the object.
-
-        The string representation includes the class name, the object's id,
-        and the object's attributes.
+        Returns a string representation of the BaseModel instance.
 
         Returns:
-            str: The string representation of the object.
+            str: A string representation of the BaseModel instance.
         """
-        cls = (str(type(self)).split(".")[-1]).split("'")[0]
-        return "[{}] ({}) {}".format(cls, self.id, self.__dict__)
+        return "[{}] ({}) {}".format(
+            self.__class__.__name__, self.id, self.__dict__
+        )
 
     def save(self):
         """
-        Updates the `updated_at` attribute with the current datetime and\
-            saves the instance to the storage.
+        Saves the BaseModel instance to the database.
         """
+        self.updated_at = datetime.now()
         from models import storage
 
-        self.updated_at = datetime.now()
         storage.new(self)
         storage.save()
 
     def to_dict(self):
         """
-        Converts the object attributes to a dictionary representation.
+        Converts the BaseModel instance to a dictionary.
 
         Returns:
-            dict: A dictionary representation of the object attributes.
+            dict: A dictionary representation of the BaseModel instance.
         """
-        ret = self.__dict__.copy()
-        ret["__class__"] = str(type(self)).split(".")[-1].split("'")[0]
-        ret["updated_at"] = self.updated_at.isoformat()
-        ret["created_at"] = self.created_at.isoformat()
-        if "_sa_instance_state" in ret:
-            del ret["_sa_instance_state"]
-        return ret
+        new_dict = self.__dict__.copy()
+        new_dict["__class__"] = self.__class__.__name__
+        new_dict["created_at"] = self.created_at.isoformat()
+        new_dict["updated_at"] = self.updated_at.isoformat()
+        if "_sa_instance_state" in new_dict:
+            del new_dict["_sa_instance_state"]
+        return new_dict
 
     def delete(self):
         """
-        Deletes the current instance from the storage.
+        Deletes the BaseModel instance from the database.
         """
         from models import storage
 
         storage.delete(self)
+        storage.save()

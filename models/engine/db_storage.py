@@ -1,16 +1,19 @@
 #!/usr/bin/python3
+"""
+This module contains the DBStorage class, which represents the database storage engine for the AirBnB clone project.
+It provides methods to interact with the database, such as querying, adding, deleting, and saving objects.
+"""
+
 from models.base_model import Base, BaseModel
 
 
 class DBStorage:
-    from sqlalchemy.orm import sessionmaker
-    from models.base_model import BaseModel
-
     """
-    This class represents the database storage engine for the AirBnB clone\
-        project.
-    It provides methods to interact with the database, such as querying,\
-        adding, deleting, and saving objects.
+    Represents the database storage engine for the AirBnB clone project.
+
+    Attributes:
+        __engine (sqlalchemy.engine.base.Engine): The SQLAlchemy engine instance.
+        __session (sqlalchemy.orm.session.Session): The SQLAlchemy session instance.
     """
 
     __engine = None
@@ -18,67 +21,62 @@ class DBStorage:
 
     def __init__(self):
         """
-        Initializes a new instance of the DBStorage class.
-        It creates a database engine and sets up a session to interact with\
-            the database.
+        Initializes a new DBStorage instance.
         """
         from sqlalchemy import create_engine
+        from sqlalchemy.orm import sessionmaker
+
         from os import getenv
 
+        user = getenv("HBNB_MYSQL_USER")
+        password = getenv("HBNB_MYSQL_PWD")
+        host = getenv("HBNB_MYSQL_HOST")
+        db = getenv("HBNB_MYSQL_DB")
+
         self.__engine = create_engine(
-            "mysql+mysqldb://{}:{}@{}/{}".format(
-                getenv("HBNB_MYSQL_USER"),
-                getenv("HBNB_MYSQL_PWD"),
-                getenv("HBNB_MYSQL_HOST"),
-                getenv("HBNB_MYSQL_DB"),
-            ),
+            "mysql+mysqldb://{}:{}@{}/{}".format(user, password, host, db),
             pool_pre_ping=True,
         )
+
         if getenv("HBNB_ENV") == "test":
             Base.metadata.drop_all(self.__engine)
 
     def all(self, cls=None):
         """
-        Retrieves all objects from the database.
+        Returns a dictionary of all objects in the database.
 
         Args:
-            cls (class, optional): The class of objects to retrieve. If None,\
-                retrieves all objects of all classes.
+            cls (class): The class of objects to retrieve.
 
-        Returns:
-            dict: A dictionary of objects, where the keys are in the format\
-                "<class_name>.<object_id>".
+        If cls is not None, the dictionary contains only objects of the specified class.
+        Otherwise, the dictionary contains objects of all classes.
         """
-        from models.user import User
-        from models.state import State
-        from models.city import City
-        from models.amenity import Amenity
-        from models.place import Place
-        from models.review import Review
+        from models import storage
 
-        classes = [BaseModel, User, State, City, Amenity, Place, Review]
-        objs = {}
-        if cls is not None:
-            for obj in self.__session.query(cls):
-                objs[obj.__class__.__name__ + "." + obj.id] = obj
+        if cls:
+            return {
+                obj.__class__.__name__ + "." + obj.id: obj
+                for obj in self.__session.query(cls).all()
+            }
         else:
-            for cls in classes:
-                for obj in self.__session.query(cls):
-                    objs[obj.__class__.__name__ + "." + obj.id] = obj
-        return objs
+            return {
+                obj.__class__.__name__ + "." + obj.id: obj
+                for obj in storage.all_classes
+                for obj in self.__session.query(obj).all()
+            }
 
     def new(self, obj):
         """
         Adds a new object to the database session.
 
         Args:
-            obj: The object to add to the session.
+            obj (BaseModel): The object to add to the session.
         """
         self.__session.add(obj)
 
     def save(self):
         """
-        Commits the changes made in the current session to the database.
+        Commits all changes to the database session.
         """
         self.__session.commit()
 
@@ -87,19 +85,29 @@ class DBStorage:
         Deletes an object from the database session.
 
         Args:
-            obj (optional): The object to delete from the session. If None,\
-                does nothing.
+            obj (BaseModel): The object to delete from the session.
         """
-        if obj is not None:
+        if obj:
             self.__session.delete(obj)
 
     def reload(self):
         """
-        Reloads the database session and creates the necessary tables if they\
-            don't exist.
+        Reloads the database session.
+
+        This method creates all the necessary tables in the database using the
+        SQLAlchemy `Base.metadata.create_all` method. It then creates a session
+        factory using `sessionmaker` and binds it to the engine. Finally, it creates
+        a scoped session using the session factory and assigns it to the `__session`
+        attribute of the `db_storage` instance.
+
+        Note:
+        - The `expire_on_commit` parameter is set to `False` to prevent objects from
+            being expired after each commit.
+
+        Returns:
+        None
         """
-        from sqlalchemy.orm import sessionmaker, scoped_session
-        from models.base_model import BaseModel
+        from sqlalchemy.orm import scoped_session, sessionmaker
 
         Base.metadata.create_all(self.__engine)
         session_factory = sessionmaker(

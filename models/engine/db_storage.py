@@ -4,8 +4,10 @@ from models.base_model import Base
 
 class DBStorage:
     """
-    This class represents the database storage engine for the AirBnB clone project.
-    It provides methods to interact with the database, such as querying, adding, deleting, and saving objects.
+    This class represents the database storage engine for the AirBnB clone\
+        project.
+    It provides methods to interact with the database, such as querying,\
+        adding, deleting, and saving objects.
     """
 
     __engine = None
@@ -14,7 +16,8 @@ class DBStorage:
     def __init__(self):
         """
         Initializes a new instance of the DBStorage class.
-        It creates a database engine and sets up a session to interact with the database.
+        It creates a database engine and sets up a session to interact with\
+            the database.
         """
         from sqlalchemy import create_engine
         from sqlalchemy.orm import sessionmaker
@@ -37,10 +40,12 @@ class DBStorage:
         Retrieves all objects from the database.
 
         Args:
-            cls (class, optional): The class of objects to retrieve. If None, retrieves all objects of all classes.
+            cls (class, optional): The class of objects to retrieve. If None,\
+                retrieves all objects of all classes.
 
         Returns:
-            dict: A dictionary of objects, where the keys are in the format "<class_name>.<object_id>".
+            dict: A dictionary of objects, where the keys are in the format\
+                "<class_name>.<object_id>".
         """
         from models.base_model import BaseModel
         from models.user import User
@@ -81,14 +86,16 @@ class DBStorage:
         Deletes an object from the database session.
 
         Args:
-            obj (optional): The object to delete from the session. If None, does nothing.
+            obj (optional): The object to delete from the session. If None,\
+                does nothing.
         """
         if obj is not None:
             self.__session.delete(obj)
 
     def reload(self):
         """
-        Reloads the database session and creates the necessary tables if they don't exist.
+        Reloads the database session and creates the necessary tables if they\
+            don't exist.
         """
         from sqlalchemy.orm import sessionmaker, scoped_session
         from models.base_model import BaseModel

@@ -5,11 +5,13 @@ import json
 
 class FileStorage:
     """
-    This class represents a file storage system for storing and retrieving objects.
+    This class represents a file storage system for storing and retrieving\
+        objects.
 
     Attributes:
         __file_path (str): The path to the JSON file used for storage.
-        __objects (dict): A dictionary containing all objects currently stored in the FileStorage.
+        __objects (dict): A dictionary containing all objects currently\
+            stored in the FileStorage.
     """
 
     __file_path = "file.json"
@@ -19,11 +21,14 @@ class FileStorage:
         """
         Returns a dictionary of all objects in the storage.
 
-        If a class is specified, it returns a dictionary of objects of that class.
-        If no class is specified, it returns a dictionary of all objects in the storage.
+        If a class is specified, it returns a dictionary of objects of that\
+            class.
+        If no class is specified, it returns a dictionary of all objects in\
+            the storage.
 
         Args:
-            cls (class, optional): The class to filter the objects by. Defaults to None.
+            cls (class, optional): The class to filter the objects by.\
+                Defaults to None.
 
         Returns:
             dict: A dictionary of objects in the storage.
@@ -68,9 +73,12 @@ class FileStorage:
         """
         Reloads objects from JSON file.
 
-        This method reads the JSON file specified by `FileStorage.__file_path` and
-        reloads the objects stored in it. It imports the necessary model classes
-        and creates instances of those classes using the data from the JSON file.
+        This method reads the JSON file specified by `FileStorage\
+            __file_path` and
+        reloads the objects stored in it. It imports the necessary model\
+            classes
+        and creates instances of those classes using the data from the JSON\
+            file.
 
         Returns:
             None

@@ -53,19 +53,23 @@ class test_City(test_basemodel):
 
     def test_state_id(self):
         """
-        Test case to verify the type of the state_id attribute in the City class.
+        Test case to verify the type of the state_id attribute in the City\
+            class.
 
-        It creates a new instance of the City class using the value() method,
-        and then asserts that the type of the state_id attribute is a string.
+        It creates a new instance of the City class using the value()\
+            method,and then asserts that the type of the state_id attribute\
+                is a string.
         """
         new = self.value()
         self.assertEqual(type(new.state_id), str)
 
     def test_name(self):
         """
-        Test case to verify the type of the 'name' attribute of a City instance.
+        Test case to verify the type of the 'name' attribute of a City\
+            instance.
 
-        It creates a new City instance using the 'value' method from the test class.
+        It creates a new City instance using the 'value' method from the test\
+            class.
         Then, it asserts that the type of the 'name' attribute is a string.
         """
         new = self.value()

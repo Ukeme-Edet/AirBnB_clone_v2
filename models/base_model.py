@@ -11,9 +11,15 @@ Base = declarative_base()
 class BaseModel:
     """A base class for all hbnb models"""
 
+    from datetime import timezone
+
     id = Column(String(60), primary_key=True, nullable=False)
-    created_at = Column(DateTime, nullable=False, default=datetime.now("UTC"))
-    updated_at = Column(DateTime, nullable=False, default=datetime.now("UTC"))
+    created_at = Column(
+        DateTime, nullable=False, default=datetime.now(timezone.utc)
+    )
+    updated_at = Column(
+        DateTime, nullable=False, default=datetime.now(timezone.utc)
+    )
 
     def __init__(self, *args, **kwargs):
         """
@@ -37,7 +43,8 @@ class BaseModel:
             kwargs["created_at"] = datetime.strptime(
                 kwargs["created_at"], "%Y-%m-%dT%H:%M:%S.%f"
             )
-            del kwargs["__class__"]
+            if "id" not in kwargs:
+                kwargs["id"] = str(uuid.uuid4())
             self.__dict__.update(kwargs)
 
     def __str__(self):

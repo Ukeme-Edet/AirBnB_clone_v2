@@ -120,9 +120,13 @@ class test_basemodel(unittest.TestCase):
     def test_init_with_args(self):
         """Test initializing BaseModel with arguments."""
         id = "123"
-        created_at = datetime.now()
-        updated_at = datetime.now()
-        i = self.value(id=id, created_at=created_at, updated_at=updated_at)
+        created_at = datetime.datetime.now()
+        updated_at = datetime.datetime.now()
+        i = self.value(
+            id=id,
+            created_at=created_at.isoformat(),
+            updated_at=updated_at.isoformat(),
+        )
         self.assertEqual(i.id, id)
         self.assertEqual(i.created_at, created_at)
         self.assertEqual(i.updated_at, updated_at)
@@ -159,4 +163,4 @@ class test_basemodel(unittest.TestCase):
         i = self.value()
         i.save()
         i.delete()
-        self.assertIsNone(storage.get(self.name, i.id))
+        self.assertNotIn(i, storage.all().values())

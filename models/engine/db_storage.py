@@ -1,8 +1,11 @@
 #!/usr/bin/python3
-from models.base_model import Base
+from models.base_model import Base, BaseModel
 
 
 class DBStorage:
+    from sqlalchemy.orm import sessionmaker
+    from models.base_model import BaseModel
+
     """
     This class represents the database storage engine for the AirBnB clone\
         project.
@@ -20,7 +23,6 @@ class DBStorage:
             the database.
         """
         from sqlalchemy import create_engine
-        from sqlalchemy.orm import sessionmaker
         from os import getenv
 
         self.__engine = create_engine(
@@ -47,7 +49,6 @@ class DBStorage:
             dict: A dictionary of objects, where the keys are in the format\
                 "<class_name>.<object_id>".
         """
-        from models.base_model import BaseModel
         from models.user import User
         from models.state import State
         from models.city import City

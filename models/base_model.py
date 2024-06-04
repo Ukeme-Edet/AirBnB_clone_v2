@@ -37,10 +37,10 @@ class BaseModel:
 
     id = Column(String(60), unique=True, primary_key=True, nullable=False)
     created_at = Column(
-        DateTime, default=datetime.now(timezone.utc()), nullable=False
+        DateTime, default=datetime.now(timezone.utc), nullable=False
     )
     updated_at = Column(
-        DateTime, default=datetime.now(timezone.utc()), nullable=False
+        DateTime, default=datetime.now(timezone.utc), nullable=False
     )
 
     def __init__(self, *args, **kwargs):

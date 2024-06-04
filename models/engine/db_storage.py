@@ -23,23 +23,25 @@ class DBStorage:
         """
         Initializes a new DBStorage instance.
         """
-        from sqlalchemy import create_engine
-        from sqlalchemy.orm import sessionmaker
-
         from os import getenv
+        from sqlalchemy import create_engine
+        from sqlalchemy.orm import scoped_session, sessionmaker
 
         user = getenv("HBNB_MYSQL_USER")
-        password = getenv("HBNB_MYSQL_PWD")
+        pwd = getenv("HBNB_MYSQL_PWD")
         host = getenv("HBNB_MYSQL_HOST")
         db = getenv("HBNB_MYSQL_DB")
 
         self.__engine = create_engine(
-            "mysql+mysqldb://{}:{}@{}/{}".format(user, password, host, db),
+            "mysql+mysqldb://{}:{}@{}/{}".format(user, pwd, host, db),
             pool_pre_ping=True,
         )
 
         if getenv("HBNB_ENV") == "test":
             Base.metadata.drop_all(self.__engine)
+
+        Session = sessionmaker(bind=self.__engine, expire_on_commit=False)
+        self.__session = scoped_session(Session)
 
     def all(self, cls=None):
         """
@@ -51,19 +53,25 @@ class DBStorage:
         If cls is not None, the dictionary contains only objects of the specified class.
         Otherwise, the dictionary contains objects of all classes.
         """
-        from models import storage
+        from sqlalchemy.orm.exc import UnmappedClassError
+
+        classes = []
 
         if cls:
-            return {
-                obj.__class__.__name__ + "." + obj.id: obj
-                for obj in self.__session.query(cls).all()
-            }
+            classes.append(cls)
         else:
-            return {
-                obj.__class__.__name__ + "." + obj.id: obj
-                for obj in storage.all_classes
-                for obj in self.__session.query(obj).all()
-            }
+            classes = [cls for cls in Base.__subclasses__()]
+
+        objects = {}
+        for cls in classes:
+            try:
+                for obj in self.__session.query(cls):
+                    key = "{}.{}".format(type(obj).__name__, obj.id)
+                    objects[key] = obj
+            except UnmappedClassError:
+                pass
+
+        return objects
 
     def new(self, obj):
         """
@@ -110,8 +118,6 @@ class DBStorage:
         from sqlalchemy.orm import scoped_session, sessionmaker
 
         Base.metadata.create_all(self.__engine)
-        session_factory = sessionmaker(
-            bind=self.__engine, expire_on_commit=False
-        )
-        Session = scoped_session(session_factory)
-        self.__session = Session()
+
+        Session = sessionmaker(bind=self.__engine, expire_on_commit=False)
+        self.__session = scoped_session(Session)

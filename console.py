@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 """ Console Module """
 import cmd
 import datetime
@@ -65,12 +65,12 @@ class HBNBCommand(cmd.Cmd):
             _cls = pline[: pline.find(".")]
 
             # isolate and validate <command>
-            _cmd = pline[pline.find(".") + 1 : pline.find("(")]
+            _cmd = pline[pline.find(".") + 1: pline.find("(")]
             if _cmd not in HBNBCommand.dot_cmds:
                 raise Exception
 
             # if parantheses contain arguments, parse them
-            pline = pline[pline.find("(") + 1 : pline.find(")")]
+            pline = pline[pline.find("(") + 1: pline.find(")")]
             if pline:
                 # partition args: (<id>, [<delim>], [<*args>])
                 pline = pline.partition(", ")  # pline convert to tuple
@@ -136,7 +136,7 @@ class HBNBCommand(cmd.Cmd):
         obj_kwargs = {}
         if class_match is not None:
             class_name = class_match.group("name")
-            params_str = args[len(class_name) :].strip()
+            params_str = args[len(class_name):].strip()
             params = params_str.split(" ")
             str_pattern = r'(?P<t_str>"([^"]|\")*")'
             float_pattern = r"(?P<t_float>[-+]?\d+\.\d+)"
@@ -169,9 +169,13 @@ class HBNBCommand(cmd.Cmd):
             if not hasattr(obj_kwargs, "id"):
                 obj_kwargs["id"] = str(uuid.uuid4())
             if not hasattr(obj_kwargs, "created_at"):
-                obj_kwargs["created_at"] = str(datetime.datetime.now())
+                obj_kwargs["created_at"] = datetime.datetime.now(
+                    datetime.timezone.utc
+                ).isoformat()[:-6]
             if not hasattr(obj_kwargs, "updated_at"):
-                obj_kwargs["updated_at"] = str(datetime.datetime.now())
+                obj_kwargs["updated_at"] = datetime.datetime.now(
+                    datetime.timezone.utc
+                ).isoformat()[:-6]
             new_instance = HBNBCommand.classes[class_name](**obj_kwargs)
             new_instance.save()
             print(new_instance.id)
@@ -329,7 +333,7 @@ class HBNBCommand(cmd.Cmd):
             if args and args[0] == '"':  # check for quoted arg
                 second_quote = args.find('"', 1)
                 att_name = args[1:second_quote]
-                args = args[second_quote + 1 :]
+                args = args[second_quote + 1:]
 
             args = args.partition(" ")
 
@@ -338,7 +342,7 @@ class HBNBCommand(cmd.Cmd):
                 att_name = args[0]
             # check for quoted val arg
             if args[2] and args[2][0] == '"':
-                att_val = args[2][1 : args[2].find('"', 1)]
+                att_val = args[2][1: args[2].find('"', 1)]
 
             # if att_val was not quoted arg
             if not att_val and args[2]:

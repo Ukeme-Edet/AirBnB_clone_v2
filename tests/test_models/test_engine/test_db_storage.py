@@ -59,9 +59,9 @@ class TestDBStorage(unittest.TestCase):
             first_name="John",
             last_name="Zoldyck",
         )
-        self.assertFalse(new in storage.all().values())
+        self.assertNotIn(new, storage.all().values())
         new.save()
-        self.assertTrue(new in storage.all().values())
+        self.assertIn(new, storage.all().values())
         dbc = MySQLdb.connect(
             host=os.getenv("HBNB_MYSQL_HOST"),
             port=3306,
@@ -72,7 +72,7 @@ class TestDBStorage(unittest.TestCase):
         cursor = dbc.cursor()
         cursor.execute('SELECT * FROM users WHERE id="{}"'.format(new.id))
         result = cursor.fetchone()
-        self.assertTrue(result is not None)
+        self.assertIsNotNone(result)
         self.assertIn("john2020@gmail.com", result)
         self.assertIn("password", result)
         self.assertIn("John", result)
@@ -97,11 +97,11 @@ class TestDBStorage(unittest.TestCase):
             db=os.getenv("HBNB_MYSQL_DB"),
         )
         new.save()
-        self.assertTrue(new in storage.all().values())
+        self.assertIn(new, storage.all().values())
         cursor = dbc.cursor()
         cursor.execute('SELECT * FROM users WHERE id="{}"'.format(new.id))
         result = cursor.fetchone()
-        self.assertTrue(result is not None)
+        self.assertIsNotNone(result)
         self.assertIn("john2020@gmail.com", result)
         self.assertIn("password", result)
         self.assertIn("John", result)
@@ -162,8 +162,8 @@ class TestDBStorage(unittest.TestCase):
         result = cursor.fetchone()
         cursor.execute("SELECT COUNT(*) FROM users;")
         old_cnt = cursor.fetchone()[0]
-        self.assertTrue(result is None)
-        self.assertFalse(new in storage.all().values())
+        self.assertIsNone(result)
+        self.assertNotIn(new, storage.all().values())
         new.save()
         dbc1 = MySQLdb.connect(
             host=os.getenv("HBNB_MYSQL_HOST"),
@@ -177,9 +177,9 @@ class TestDBStorage(unittest.TestCase):
         result = cursor1.fetchone()
         cursor1.execute("SELECT COUNT(*) FROM users;")
         new_cnt = cursor1.fetchone()[0]
-        self.assertFalse(result is None)
+        self.assertIsNotNone(result)
         self.assertEqual(old_cnt + 1, new_cnt)
-        self.assertTrue(new in storage.all().values())
+        self.assertIn(new, storage.all().values())
         cursor1.close()
         dbc1.close()
         cursor.close()

@@ -37,7 +37,7 @@ class test_fileStorage(unittest.TestCase):
         new.save()
         for obj in storage.all().values():
             temp = obj
-        self.assertTrue(temp is obj)
+        self.assertIs(obj, temp)
 
     def test_all(self):
         """__objects is properly returned"""

@@ -64,7 +64,7 @@ class TestHBNBCommand(unittest.TestCase):
             cursor = dbc.cursor()
             cursor.execute('SELECT * FROM users WHERE id="{}"'.format(mdl_id))
             result = cursor.fetchone()
-            self.assertTrue(result is not None)
+            self.assertIsNotNone(result)
             self.assertIn("john25@gmail.com", result)
             self.assertIn("123", result)
             cursor.close()
@@ -87,7 +87,7 @@ class TestHBNBCommand(unittest.TestCase):
             cursor = dbc.cursor()
             cursor.execute('SELECT * FROM users WHERE id="{}"'.format(obj.id))
             result = cursor.fetchone()
-            self.assertTrue(result is None)
+            self.assertIsNone(result)
             cons.onecmd("show User {}".format(obj.id))
             self.assertEqual(
                 cout.getvalue().strip(), "** no instance found **"
@@ -105,7 +105,7 @@ class TestHBNBCommand(unittest.TestCase):
             clear_stream(cout)
             cons.onecmd("show User {}".format(obj.id))
             result = cursor.fetchone()
-            self.assertTrue(result is not None)
+            self.assertIsNotNone(result)
             self.assertIn("john25@gmail.com", result)
             self.assertIn("123", result)
             self.assertIn("john25@gmail.com", cout.getvalue())

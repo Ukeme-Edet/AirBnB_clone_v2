@@ -10,6 +10,7 @@ It inherits from the BaseModel class and is mapped to the "states" table in\
 from os import getenv
 from sqlalchemy import Column, String
 from models.base_model import BaseModel, Base
+from sqlalchemy.orm import relationship
 
 
 class State(BaseModel, Base):
@@ -28,26 +29,26 @@ class State(BaseModel, Base):
 
     __tablename__ = "states"
     name = Column(String(128), nullable=False)
-    cities = []
-    if getenv("HBNB_TYPE_STORAGE") != "db":
+    if getenv("HBNB_TYPE_STORAGE") == "db":
+        cities = relationship("City", backref="state", cascade="all, delete")
+    else:
 
         @property
         def cities(self):
-            """Get a list of all cities in this state"""
+            """
+            Retrieves a list of cities associated with the state.
+
+            Returns:
+                list: A list of City instances associated with the state.
+            """
             from models import storage
             from models.city import City
 
-            cities = storage.all(City)
-            return [
-                city for city in cities.values() if city.state_id == self.id
-            ]
-
-    else:
-        from sqlalchemy.orm import relationship
-
-        cities = relationship(
-            "City", backref="state", cascade="all, delete-orphan"
-        )
+            city_list = []
+            for city in storage.all(City).values():
+                if city.state_id == self.id:
+                    city_list.append(city)
+            return city_list
 
     def __init__(self, *args, **kwargs):
         """
@@ -57,8 +58,10 @@ class State(BaseModel, Base):
             *args: Variable length argument list.
             **kwargs: Arbitrary keyword arguments.
 
-        Attributes:
-            name (str): The name of the state.
+        If kwargs is not empty, the instance attributes are set based on the\
+            key-value pairs
+        in kwargs. Otherwise, the instance attributes are set with default\
+            values.
         """
         super().__init__(*args, **kwargs)
         self.name = kwargs.get("name", "")

@@ -45,6 +45,12 @@ class Place(BaseModel, Base):
         price_by_night (int): The price per night for the place.
         latitude (float): The latitude coordinate of the place.
         longitude (float): The longitude coordinate of the place.
+        reviews (relationship): The relationship between the place and its\
+            reviews.
+        amenities (relationship): The relationship between the place and its\
+            amenities.
+        amenities_ids (list): The list of Amenity IDs associated with the\
+            place.
     """
 
     __tablename__ = "places"
@@ -58,15 +64,15 @@ class Place(BaseModel, Base):
     price_by_night = Column(Integer, nullable=False, default=0)
     latitude = Column(Float, nullable=True)
     longitude = Column(Float, nullable=True)
-    if getenv("HBNB_TYPE_STORAGE") == "db":
-        reviews = relationship(
-            "Review",
-            backref="place",
-            cascade="all, delete")
-        amenities = relationship(
-            "Amenity", secondary=association_table, viewonly=False
-        )
-    else:
+    reviews = relationship("Review", backref="place", cascade="all, delete")
+    amenities = relationship(
+        "Amenity", secondary=association_table, viewonly=False
+    )
+    amenities_ids = []
+    if getenv("HBNB_TYPE_STORAGE") != "db":
+        city_id = ""
+        description = ""
+        latitude = 0.0
 
         @property
         def reviews(self):

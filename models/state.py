@@ -1,13 +1,28 @@
 #!/usr/bin/python3
-""" State Module for HBNB project """
-from os import getenv
+"""
+This module defines the State class.
 
+State class represents a state in the AirBnB clone project.
+It inherits from the BaseModel class and is mapped to the "states" table in the database.
+"""
+
+from os import getenv
 from sqlalchemy import Column, String
 from models.base_model import BaseModel, Base
 
 
 class State(BaseModel, Base):
-    """State class"""
+    """
+    Represents a state in the application.
+
+    Attributes:
+        __tablename__ (str): The name of the database table for states.
+        name (str): The name of the state.
+        cities (list): A list of cities associated with the state.
+
+    Methods:
+        __init__(self, *args, **kwargs): Initializes a new instance of the State class.
+    """
 
     __tablename__ = "states"
     name = Column(String(128), nullable=False)
@@ -31,3 +46,17 @@ class State(BaseModel, Base):
         cities = relationship(
             "City", backref="state", cascade="all, delete-orphan"
         )
+
+    def __init__(self, *args, **kwargs):
+        """
+        Initializes a new instance of the State class.
+
+        Args:
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+
+        Attributes:
+            name (str): The name of the state.
+        """
+        super().__init__(*args, **kwargs)
+        self.name = kwargs.get("name", "")

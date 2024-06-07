@@ -35,9 +35,11 @@ class FileStorage:
         """
         if cls:
             return {
-                k: v for k, v in self.__objects.items() if isinstance(v, cls)
+                key: val
+                for key, val in self.__objects.items()
+                if val.__class__ == cls
             }
-        return FileStorage.__objects
+        return self.__objects
 
     def new(self, obj):
         """
@@ -62,11 +64,10 @@ class FileStorage:
         Returns:
             None
         """
+        temp = {}
+        for key, val in self.all().items():
+            temp[key] = val.to_dict()
         with open(FileStorage.__file_path, "w") as f:
-            temp = {}
-            temp.update(FileStorage.__objects)
-            for key, val in temp.items():
-                temp[key] = val.to_dict()
             json.dump(temp, f)
 
     def reload(self):
@@ -121,5 +122,6 @@ class FileStorage:
         """
         if obj:
             key = obj.__class__.__name__ + "." + obj.id
-            if key in self.all():
-                del self.all()[key]
+            if key in self.__objects:
+                del self.__objects[key]
+            self.save()

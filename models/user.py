@@ -20,3 +20,20 @@ class User(BaseModel, Base):
     password = Column(String(128), nullable=False)
     first_name = Column(String(128), nullable=True)
     last_name = Column(String(128), nullable=True)
+
+    def __init__(self, *args, **kwargs):
+        """
+        Initializes a new User instance.
+
+        Args:
+            *args: Variable length argument list.
+            **kwargs: Arbitrary keyword arguments.
+
+        If kwargs is not empty, the instance attributes are set based on the key-value pairs
+        in kwargs. Otherwise, the instance attributes are set with default values.
+        """
+        super().__init__(*args, **kwargs)
+        self.email = kwargs.get("email", "")
+        self.password = kwargs.get("password", "")
+        self.first_name = kwargs.get("first_name", "")
+        self.last_name = kwargs.get("last_name", "")

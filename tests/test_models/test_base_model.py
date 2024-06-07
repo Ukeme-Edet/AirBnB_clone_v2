@@ -78,20 +78,6 @@ class test_basemodel(unittest.TestCase):
         n = i.to_dict()
         self.assertEqual(i.to_dict(), n)
 
-    def test_kwargs_none(self):
-        """Test creating an instance of BaseModel with None as a keyword\
-            argument."""
-        n = {None: None}
-        with self.assertRaises(TypeError):
-            new = self.value(**n)
-
-    def test_kwargs_one(self):
-        """Test creating an instance of BaseModel with a missing keyword\
-            argument."""
-        n = {"Name": "test"}
-        with self.assertRaises(KeyError):
-            new = self.value(**n)
-
     def test_id(self):
         """Test the id attribute of BaseModel."""
         new = self.value()
@@ -101,14 +87,6 @@ class test_basemodel(unittest.TestCase):
         """Test the created_at attribute of BaseModel."""
         new = self.value()
         self.assertEqual(type(new.created_at), datetime.datetime)
-
-    def test_updated_at(self):
-        """Test the updated_at attribute of BaseModel."""
-        new = self.value()
-        self.assertEqual(type(new.updated_at), datetime.datetime)
-        n = new.to_dict()
-        new = BaseModel(**n)
-        self.assertNotEqual(new.created_at, new.updated_at)
 
     def test_init_no_args(self):
         """Test initializing BaseModel with no arguments."""

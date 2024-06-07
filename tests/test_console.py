@@ -19,7 +19,9 @@ from tests import clear_stream
 class TestHBNBCommand(unittest.TestCase):
     """Represents the test class for the HBNBCommand class."""
 
-    @unittest.skipIf(os.getenv("HBNB_TYPE_STORAGE") == "db", "FileStorage test")
+    @unittest.skipIf(
+        os.getenv("HBNB_TYPE_STORAGE") == "db", "FileStorage test"
+    )
     def test_fs_create(self):
         """Tests the create command with the file storage."""
         with patch("sys.stdout", new=StringIO()) as cout:
@@ -87,7 +89,9 @@ class TestHBNBCommand(unittest.TestCase):
             result = cursor.fetchone()
             self.assertTrue(result is None)
             cons.onecmd("show User {}".format(obj.id))
-            self.assertEqual(cout.getvalue().strip(), "** no instance found **")
+            self.assertEqual(
+                cout.getvalue().strip(), "** no instance found **"
+            )
             obj.save()
             dbc = MySQLdb.connect(
                 host=os.getenv("HBNB_MYSQL_HOST"),

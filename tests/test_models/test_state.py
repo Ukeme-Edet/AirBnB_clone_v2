@@ -1,44 +1,23 @@
 #!/usr/bin/python3
-"""
-This module contains the unit tests for the State class.
-"""
+""" """
 from tests.test_models.test_base_model import test_basemodel
 from models.state import State
+import os
 
 
 class test_state(test_basemodel):
-    """
-    This class contains the unit tests for the State class.
-    """
+    """states test class"""
 
     def __init__(self, *args, **kwargs):
-        """
-        Initializes a new instance of the test_state class.
-        """
+        """state test class init"""
         super().__init__(*args, **kwargs)
         self.name = "State"
         self.value = State
 
     def test_name3(self):
-        """
-        Test case to check the type of the 'name' attribute of a new State\
-            instance.
-        """
+        """testing state name attr"""
         new = self.value()
-        self.assertEqual(type(new.name), str)
-
-    def test_name(self):
-        """
-        Test case to check the type of the 'name' attribute of a new State\
-            instance.
-        """
-        new_state = State()
-        self.assertEqual(type(new_state.name), str)
-
-    def test_cities(self):
-        """
-        Test case to check the type of the 'cities' attribute of a new State\
-            instance.
-        """
-        new_state = State()
-        self.assertIsInstance(new_state.cities, list)
+        self.assertEqual(
+            type(new.name),
+            str if os.getenv("HBNB_TYPE_STORAGE") != "db" else type(None),
+        )

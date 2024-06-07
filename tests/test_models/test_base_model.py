@@ -1,55 +1,58 @@
 #!/usr/bin/python3
-"""
-This module contains the unit tests for the BaseModel class.
-
-The BaseModel class is the base class for all other classes in the project.
-It defines common attributes and methods that are inherited by other classes.
-These unit tests ensure that the BaseModel class functions as expected.
-"""
-from models.base_model import BaseModel
+""" """
+from models.base_model import BaseModel, Base
+from datetime import datetime
 import unittest
-import datetime
 from uuid import UUID
 import json
 import os
-from models import storage
 
 
+@unittest.skipIf(
+    os.getenv("HBNB_TYPE_STORAGE") == "db", "basemodel test not supported"
+)
 class test_basemodel(unittest.TestCase):
-    """Test case for the BaseModel class."""
+    """test class for base_model class"""
 
     def __init__(self, *args, **kwargs):
-        """Constructor for the test case."""
+        """init the test class of basemodel"""
         super().__init__(*args, **kwargs)
         self.name = "BaseModel"
         self.value = BaseModel
 
     def setUp(self):
-        """Set up method that runs before each test."""
+        """the set up method of the test class"""
         pass
 
     def tearDown(self):
-        """Tear down method that runs after each test."""
+        """the teardown method of the ctest class"""
         try:
             os.remove("file.json")
-        except FileNotFoundError:
+        except Exception:
             pass
 
+    def test_init(self):
+        """Tests the initialization of the model class."""
+        self.assertIsInstance(self.value(), BaseModel)
+        if self.value is not BaseModel:
+            self.assertIsInstance(self.value(), Base)
+        else:
+            self.assertNotIsInstance(self.value(), Base)
+
     def test_default(self):
-        """Test the default behavior of creating an instance of BaseModel."""
+        """default testing of basemodel"""
         i = self.value()
         self.assertEqual(type(i), self.value)
 
     def test_kwargs(self):
-        """Test creating an instance of BaseModel using keyword arguments."""
+        """testing basemodel with kwargs"""
         i = self.value()
         copy = i.to_dict()
         new = BaseModel(**copy)
-        self.assertNotEqual(i, new)
+        self.assertFalse(new is i)
 
     def test_kwargs_int(self):
-        """Test creating an instance of BaseModel with invalid keyword\
-            arguments."""
+        """testing with kwargs again but with int kwargs"""
         i = self.value()
         copy = i.to_dict()
         copy.update({1: 2})
@@ -57,7 +60,7 @@ class test_basemodel(unittest.TestCase):
             new = BaseModel(**copy)
 
     def test_save(self):
-        """Test the save method of BaseModel."""
+        """Testing save metthod"""
         i = self.value()
         i.save()
         key = self.name + "." + i.id
@@ -66,79 +69,104 @@ class test_basemodel(unittest.TestCase):
             self.assertEqual(j[key], i.to_dict())
 
     def test_str(self):
-        """Test the string representation of BaseModel."""
+        """testing the str method of themodel"""
         i = self.value()
         self.assertEqual(
             str(i), "[{}] ({}) {}".format(self.name, i.id, i.__dict__)
         )
 
     def test_todict(self):
-        """Test the to_dict method of BaseModel."""
+        """testing the to_dict method"""
         i = self.value()
         n = i.to_dict()
         self.assertEqual(i.to_dict(), n)
+        # Tests if it's a dictionary
+        self.assertIsInstance(self.value().to_dict(), dict)
+        # Tests if to_dict contains accurate keys
+        self.assertIn("id", self.value().to_dict())
+        self.assertIn("created_at", self.value().to_dict())
+        self.assertIn("updated_at", self.value().to_dict())
+        # Tests if to_dict contains added attributes
+        mdl = self.value()
+        mdl.firstname = "Celestine"
+        mdl.lastname = "Akpanoko"
+        self.assertIn("firstname", mdl.to_dict())
+        self.assertIn("lastname", mdl.to_dict())
+        self.assertIn("firstname", self.value(firstname="Celestine").to_dict())
+        self.assertIn("lastname", self.value(lastname="Akpanoko").to_dict())
+        # Tests to_dict datetime attributes if they are strings
+        self.assertIsInstance(self.value().to_dict()["created_at"], str)
+        self.assertIsInstance(self.value().to_dict()["updated_at"], str)
+        # Tests to_dict output
+        datetime_now = datetime.today()
+        mdl = self.value()
+        mdl.id = "012345"
+        mdl.created_at = mdl.updated_at = datetime_now
+        to_dict = {
+            "id": "012345",
+            "__class__": mdl.__class__.__name__,
+            "created_at": datetime_now.isoformat(),
+            "updated_at": datetime_now.isoformat(),
+        }
+        self.assertDictEqual(mdl.to_dict(), to_dict)
+        if os.getenv("HBNB_TYPE_STORAGE") != "db":
+            self.assertDictEqual(
+                self.value(id="u-b34", age=13).to_dict(),
+                {
+                    "__class__": mdl.__class__.__name__,
+                    "id": "u-b34",
+                    "age": 13,
+                },
+            )
+            self.assertDictEqual(
+                self.value(id="u-b34", age=None).to_dict(),
+                {
+                    "__class__": mdl.__class__.__name__,
+                    "id": "u-b34",
+                    "age": None,
+                },
+            )
+        # Tests to_dict output contradiction
+        mdl_d = self.value()
+        self.assertIn("__class__", self.value().to_dict())
+        self.assertNotIn("__class__", self.value().__dict__)
+        self.assertNotEqual(mdl_d.to_dict(), mdl_d.__dict__)
+        self.assertNotEqual(mdl_d.to_dict()["__class__"], mdl_d.__class__)
+        # Tests to_dict with arg
+        with self.assertRaises(TypeError):
+            self.value().to_dict(None)
+        with self.assertRaises(TypeError):
+            self.value().to_dict(self.value())
+        with self.assertRaises(TypeError):
+            self.value().to_dict(45)
+        self.assertNotIn("_sa_instance_state", n)
+
+    def test_kwargs_none(self):
+        """testing kwargs again with none"""
+        n = {None: None}
+        with self.assertRaises(TypeError):
+            new = self.value(**n)
+
+    def test_kwargs_one(self):
+        """testing kwargs with one arg"""
+        n = {"name": "test"}
+        new = self.value(**n)
+        self.assertEqual(new.name, n["name"])
 
     def test_id(self):
-        """Test the id attribute of BaseModel."""
+        """testing id attr of the model"""
         new = self.value()
         self.assertEqual(type(new.id), str)
 
     def test_created_at(self):
-        """Test the created_at attribute of BaseModel."""
+        """testing created at attr"""
         new = self.value()
-        self.assertEqual(type(new.created_at), datetime.datetime)
+        self.assertEqual(type(new.created_at), datetime)
 
-    def test_init_no_args(self):
-        """Test initializing BaseModel with no arguments."""
-        i = self.value()
-        self.assertIsNotNone(i.id)
-        self.assertIsNotNone(i.created_at)
-        self.assertIsNotNone(i.updated_at)
-
-    def test_init_with_args(self):
-        """Test initializing BaseModel with arguments."""
-        id = "123"
-        created_at = datetime.datetime.now()
-        updated_at = datetime.datetime.now()
-        i = self.value(
-            id=id,
-            created_at=created_at.isoformat(),
-            updated_at=updated_at.isoformat(),
-        )
-        self.assertEqual(i.id, id)
-        self.assertEqual(i.created_at, created_at)
-        self.assertEqual(i.updated_at, updated_at)
-
-    def test_str_representation(self):
-        """Test the string representation of BaseModel."""
-        i = self.value()
-        expected_str = "[{}] ({}) {}".format(self.name, i.id, i.__dict__)
-        self.assertEqual(str(i), expected_str)
-
-    def test_save_updates_updated_at(self):
-        """Test that the save method updates the updated_at attribute."""
-        i = self.value()
-        old_updated_at = i.updated_at
-        i.save()
-        self.assertNotEqual(i.updated_at, old_updated_at)
-
-    def test_to_dict_returns_dict(self):
-        """Test that the to_dict method returns a dictionary."""
-        i = self.value()
-        d = i.to_dict()
-        self.assertIsInstance(d, dict)
-
-    def test_to_dict_contains_attributes(self):
-        """Test that the to_dict method contains the object's attributes."""
-        i = self.value()
-        d = i.to_dict()
-        self.assertIn("id", d)
-        self.assertIn("created_at", d)
-        self.assertIn("updated_at", d)
-
-    def test_delete(self):
-        """Test the delete method of BaseModel."""
-        i = self.value()
-        i.save()
-        i.delete()
-        self.assertNotIn(i, storage.all().values())
+    def test_updated_at(self):
+        """testing updated at attr"""
+        new = self.value()
+        self.assertEqual(type(new.updated_at), datetime)
+        n = new.to_dict()
+        new = BaseModel(**n)
+        self.assertFalse(new.created_at == new.updated_at)

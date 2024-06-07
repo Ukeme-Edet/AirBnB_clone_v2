@@ -4,9 +4,29 @@ This module defines the Place class, which represents a place in the AirBnB\
     clone application.
 """
 from os import getenv
-from sqlalchemy import Column, Float, ForeignKey, Integer, String
+from sqlalchemy import Column, Float, ForeignKey, Integer, String, Table
 from sqlalchemy.orm import relationship
+from models.amenity import Amenity
 from models.base_model import BaseModel, Base
+
+association_table = Table(
+    "place_amenity",
+    Base.metadata,
+    Column(
+        "place_id",
+        String(60),
+        ForeignKey("places.id"),
+        primary_key=True,
+        nullable=False,
+    ),
+    Column(
+        "amenity_id",
+        String(60),
+        ForeignKey("amenities.id"),
+        primary_key=True,
+        nullable=False,
+    ),
+)
 
 
 class Place(BaseModel, Base):
@@ -43,6 +63,9 @@ class Place(BaseModel, Base):
             "Review",
             backref="place",
             cascade="all, delete")
+        amenities = relationship(
+            "Amenity", secondary=association_table, viewonly=False
+        )
     else:
 
         @property
@@ -63,3 +86,34 @@ class Place(BaseModel, Base):
                 for review in reviews.values()
                 if review.place_id == self.id
             ]
+
+        @property
+        def amenities(self):
+            """
+            Getter method for the amenities attribute.
+
+            Returns:
+                A list of Amenity instances with place_id equal to the current\
+                    Place instance's id.
+            """
+            from models import storage
+            from models.amenity import Amenity
+
+            amenities = storage.all(Amenity)
+            return [
+                amenity
+                for amenity in amenities.values()
+                if amenity.place_id == self.id
+            ]
+
+        @amenities.setter
+        def amenities(self, value):
+            """
+            Setter method for the amenities attribute.
+
+            Args:
+                value (Amenity): The Amenity instance to add to the Place's\
+                    amenities list.
+            """
+            if isinstance(value, Amenity):
+                self.amenity_ids.append(value.id)

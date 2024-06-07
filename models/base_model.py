@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """
-This module defines the BaseModel class, which serves as the base class for all models in the application.
+This module defines the BaseModel class, which serves as the base class for\
+    all models in the application.
 """
 
 import uuid
@@ -62,7 +63,8 @@ class BaseModel:
         """
         Saves the BaseModel instance to the storage.
 
-        This method updates the `updated_at` attribute and calls the `new` and `save` methods of the storage.
+        This method updates the `updated_at` attribute and calls the `new` and\
+            `save` methods of the storage.
         """
         from models import storage
 

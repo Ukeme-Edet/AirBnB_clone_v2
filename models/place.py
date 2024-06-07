@@ -1,8 +1,11 @@
 #!/usr/bin/python3
 """
-This module defines the Place class, which represents a place in the AirBnB clone application.
+This module defines the Place class, which represents a place in the AirBnB\
+    clone application.
 """
+from os import getenv
 from sqlalchemy import Column, Float, ForeignKey, Integer, String
+from sqlalchemy.orm import relationship
 from models.base_model import BaseModel, Base
 
 
@@ -35,3 +38,28 @@ class Place(BaseModel, Base):
     price_by_night = Column(Integer, nullable=False, default=0)
     latitude = Column(Float, nullable=True)
     longitude = Column(Float, nullable=True)
+    if getenv("HBNB_TYPE_STORAGE") == "db":
+        reviews = relationship(
+            "Review",
+            backref="place",
+            cascade="all, delete")
+    else:
+
+        @property
+        def reviews(self):
+            """
+            Getter method for the reviews attribute.
+
+            Returns:
+                A list of Review instances with place_id equal to the current\
+                    Place instance's id.
+            """
+            from models import storage
+            from models.review import Review
+
+            reviews = storage.all(Review)
+            return [
+                review
+                for review in reviews.values()
+                if review.place_id == self.id
+            ]

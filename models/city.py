@@ -6,6 +6,7 @@ This module defines the City class, which represents a city in the AirBnB\
 
 from sqlalchemy import Column, ForeignKey, String
 from models.base_model import BaseModel, Base
+from sqlalchemy.orm import relationship
 
 
 class City(BaseModel, Base):
@@ -20,6 +21,7 @@ class City(BaseModel, Base):
     __tablename__ = "cities"
     name = Column(String(128), nullable=False)
     state_id = Column(String(60), ForeignKey("states.id"), nullable=False)
+    places = relationship("Place", backref="cities", cascade="all, delete")
 
     def __init__(self, *args, **kwargs):
         """

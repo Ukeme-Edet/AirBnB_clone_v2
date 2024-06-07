@@ -2,7 +2,8 @@
 """
 This script compresses the web_static folder into a .tgz archive.
 
-The compressed archive is stored in the "versions" directory with a timestamped filename.
+The compressed archive is stored in the "versions" directory with a\
+    timestamped filename.
 
 Usage:
     Run this script to create a compressed archive of the web_static folder.
@@ -19,7 +20,8 @@ def do_pack():
     """
     Compresses the web_static folder into a .tgz archive.
 
-    The compressed archive is stored in the "versions" directory with a timestamped filename.
+    The compressed archive is stored in the "versions" directory with a\
+        timestamped filename.
 
     Returns:
         str: The file path of the compressed archive.

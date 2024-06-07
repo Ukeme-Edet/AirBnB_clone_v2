@@ -18,8 +18,8 @@ class City(BaseModel, Base):
     """
 
     __tablename__ = "cities"
-    state_id = Column(String(60), ForeignKey("states.id"), nullable=False)
     name = Column(String(128), nullable=False)
+    state_id = Column(String(60), ForeignKey("states.id"), nullable=False)
 
     def __init__(self, *args, **kwargs):
         """
@@ -35,5 +35,3 @@ class City(BaseModel, Base):
             values.
         """
         super().__init__(*args, **kwargs)
-        self.state_id = kwargs.get("state_id", "")
-        self.name = kwargs.get("name", "")

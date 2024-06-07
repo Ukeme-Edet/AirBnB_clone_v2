@@ -1,14 +1,17 @@
 #!/usr/bin/python3
 """
-This module contains the BaseModel class, which serves as the base class for all models in the application.
+This module contains the BaseModel class, which serves as the base class for\
+    all models in the application.
 
 Attributes:
     id (str): The unique identifier for the model instance.
     created_at (datetime): The datetime when the model instance was created.
-    updated_at (datetime): The datetime when the model instance was last updated.
+    updated_at (datetime): The datetime when the model instance was last\
+        updated.
 
 Methods:
-    __init__(self, *args, **kwargs): Initializes a new instance of the BaseModel class.
+    __init__(self, *args, **kwargs): Initializes a new instance of the\
+        BaseModel class.
     __str__(self): Returns a string representation of the BaseModel instance.
     save(self): Saves the BaseModel instance to the database.
     to_dict(self): Converts the BaseModel instance to a dictionary.
@@ -29,8 +32,10 @@ class BaseModel:
 
     Attributes:
         id (str): The unique identifier for the model instance.
-        created_at (datetime): The timestamp indicating when the instance was created.
-        updated_at (datetime): The timestamp indicating when the instance was last updated.
+        created_at (datetime): The timestamp indicating when the instance was\
+            created.
+        updated_at (datetime): The timestamp indicating when the instance was\
+            last updated.
     """
 
     from datetime import timezone
@@ -51,8 +56,10 @@ class BaseModel:
             *args: Variable length argument list.
             **kwargs: Arbitrary keyword arguments.
 
-        If kwargs is not empty, the instance attributes are set based on the key-value pairs
-        in kwargs. Otherwise, the instance attributes are set with default values.
+        If kwargs is not empty, the instance attributes are set based on the\
+            key-value pairs
+        in kwargs. Otherwise, the instance attributes are set with default\
+            values.
         """
         if not kwargs:
             self.id = str(uuid.uuid4())

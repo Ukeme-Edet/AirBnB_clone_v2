@@ -29,8 +29,10 @@ class User(BaseModel, Base):
             *args: Variable length argument list.
             **kwargs: Arbitrary keyword arguments.
 
-        If kwargs is not empty, the instance attributes are set based on the key-value pairs
-        in kwargs. Otherwise, the instance attributes are set with default values.
+        If kwargs is not empty, the instance attributes are set based on the\
+            key-value pairs
+        in kwargs. Otherwise, the instance attributes are set with defaul\
+              values.
         """
         super().__init__(*args, **kwargs)
         self.email = kwargs.get("email", "")

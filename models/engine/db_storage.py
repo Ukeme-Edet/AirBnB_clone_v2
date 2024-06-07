@@ -1,7 +1,9 @@
 #!/usr/bin/python3
 """
-This module contains the DBStorage class, which represents the database storage engine for the AirBnB clone project.
-It provides methods to interact with the database, such as querying, adding, deleting, and saving objects.
+This module contains the DBStorage class, which represents the database\
+    storage engine for the AirBnB clone project.
+It provides methods to interact with the database, such as querying, adding,\
+    deleting, and saving objects.
 """
 
 from models.base_model import Base, BaseModel
@@ -12,8 +14,10 @@ class DBStorage:
     Represents the database storage engine for the AirBnB clone project.
 
     Attributes:
-        __engine (sqlalchemy.engine.base.Engine): The SQLAlchemy engine instance.
-        __session (sqlalchemy.orm.session.Session): The SQLAlchemy session instance.
+        __engine (sqlalchemy.engine.base.Engine): The SQLAlchemy engine\
+            instance.
+        __session (sqlalchemy.orm.session.Session): The SQLAlchemy session\
+            instance.
     """
 
     __engine = None
@@ -50,7 +54,8 @@ class DBStorage:
         Args:
             cls (class): The class of objects to retrieve.
 
-        If cls is not None, the dictionary contains only objects of the specified class.
+        If cls is not None, the dictionary contains only objects of the\
+            specified class.
         Otherwise, the dictionary contains objects of all classes.
         """
         from sqlalchemy.orm.exc import UnmappedClassError
@@ -104,12 +109,15 @@ class DBStorage:
 
         This method creates all the necessary tables in the database using the
         SQLAlchemy `Base.metadata.create_all` method. It then creates a session
-        factory using `sessionmaker` and binds it to the engine. Finally, it creates
-        a scoped session using the session factory and assigns it to the `__session`
+        factory using `sessionmaker` and binds it to the engine. Finally, it\
+            creates
+        a scoped session using the session factory and assigns it to the\
+            `__session`
         attribute of the `db_storage` instance.
 
         Note:
-        - The `expire_on_commit` parameter is set to `False` to prevent objects from
+        - The `expire_on_commit` parameter is set to `False` to prevent\
+            objects from
             being expired after each commit.
 
         Returns:

@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """
-This module defines the City class, which represents a city in the AirBnB clone v2 application.
+This module defines the City class, which represents a city in the AirBnB\
+    clone v2 application.
 """
 
 from sqlalchemy import Column, ForeignKey, String
@@ -28,8 +29,10 @@ class City(BaseModel, Base):
             *args: Variable length argument list.
             **kwargs: Arbitrary keyword arguments.
 
-        If kwargs is not empty, the instance attributes are set based on the key-value pairs
-        in kwargs. Otherwise, the instance attributes are set with default values.
+        If kwargs is not empty, the instance attributes are set based on the\
+            key-value pairs
+        in kwargs. Otherwise, the instance attributes are set with default\
+            values.
         """
         super().__init__(*args, **kwargs)
         self.state_id = kwargs.get("state_id", "")

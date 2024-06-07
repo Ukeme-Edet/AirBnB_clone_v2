@@ -3,7 +3,8 @@
 This module defines the State class.
 
 State class represents a state in the AirBnB clone project.
-It inherits from the BaseModel class and is mapped to the "states" table in the database.
+It inherits from the BaseModel class and is mapped to the "states" table in\
+    the database.
 """
 
 from os import getenv
@@ -21,7 +22,8 @@ class State(BaseModel, Base):
         cities (list): A list of cities associated with the state.
 
     Methods:
-        __init__(self, *args, **kwargs): Initializes a new instance of the State class.
+        __init__(self, *args, **kwargs): Initializes a new instance of the\
+            State class.
     """
 
     __tablename__ = "states"

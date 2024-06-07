@@ -29,7 +29,7 @@ place_amenity = Table(
 )
 
 
-class Amenity(BaseModel):
+class Amenity(BaseModel, Base):
     """
     Represents an amenity in the AirBnB clone application.
 

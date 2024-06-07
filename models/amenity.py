@@ -3,7 +3,8 @@
 This module defines the Amenity class and the place_amenity table.
 
 Amenity class represents an amenity that can be associated with a place.
-The place_amenity table is a many-to-many relationship table between places and amenities.
+The place_amenity table is a many-to-many relationship table between places\
+    and amenities.
 """
 from sqlalchemy import Column, ForeignKey, String, Table
 from models.base_model import BaseModel, Base
@@ -16,7 +17,8 @@ class Amenity(BaseModel, Base):
 
     Attributes:
         name (str): The name of the amenity.
-        place_amenity (relationship): The relationship between the amenity and the place.
+        place_amenity (relationship): The relationship between the amenity and\
+            the place.
     """
 
     __tablename__ = "amenities"

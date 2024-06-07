@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 """This module defines a class User"""
+from os import getenv
 from sqlalchemy import Column, String
 from models.base_model import Base, BaseModel
 from sqlalchemy.orm import relationship
@@ -17,24 +18,15 @@ class User(BaseModel, Base):
     """
 
     __tablename__ = "users"
-    email = Column(String(128), nullable=False)
-    password = Column(String(128), nullable=False)
-    first_name = Column(String(128), nullable=True)
-    last_name = Column(String(128), nullable=True)
-    places = relationship("Place", backref="user", cascade="all, delete")
-    reviews = relationship("Review", backref="user", cascade="all, delete")
-
-    def __init__(self, *args, **kwargs):
-        """
-        Initializes a new User instance.
-
-        Args:
-            *args: Variable length argument list.
-            **kwargs: Arbitrary keyword arguments.
-
-        If kwargs is not empty, the instance attributes are set based on the\
-            key-value pairs
-        in kwargs. Otherwise, the instance attributes are set with defaul\
-              values.
-        """
-        super().__init__(*args, **kwargs)
+    if getenv("HBNB_TYPE_STORAGE") == "db":
+        email = Column(String(128), nullable=False)
+        password = Column(String(128), nullable=False)
+        first_name = Column(String(128), nullable=True)
+        last_name = Column(String(128), nullable=True)
+        places = relationship("Place", backref="user", cascade="all, delete")
+        reviews = relationship("Review", backref="user", cascade="all, delete")
+    else:
+        email = ""
+        password = ""
+        first_name = ""
+        last_name = ""

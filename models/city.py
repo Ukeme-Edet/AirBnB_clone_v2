@@ -4,6 +4,7 @@ This module defines the City class, which represents a city in the AirBnB\
     clone v2 application.
 """
 
+from os import getenv
 from sqlalchemy import Column, ForeignKey, String
 from models.base_model import BaseModel, Base
 from sqlalchemy.orm import relationship
@@ -19,21 +20,10 @@ class City(BaseModel, Base):
     """
 
     __tablename__ = "cities"
-    name = Column(String(128), nullable=False)
-    state_id = Column(String(60), ForeignKey("states.id"), nullable=False)
-    places = relationship("Place", backref="cities", cascade="all, delete")
-
-    def __init__(self, *args, **kwargs):
-        """
-        Initializes a new instance of the City class.
-
-        Args:
-            *args: Variable length argument list.
-            **kwargs: Arbitrary keyword arguments.
-
-        If kwargs is not empty, the instance attributes are set based on the\
-            key-value pairs
-        in kwargs. Otherwise, the instance attributes are set with default\
-            values.
-        """
-        super().__init__(*args, **kwargs)
+    if getenv("HBNB_TYPE_STORAGE") == "db":
+        name = Column(String(128), nullable=False)
+        state_id = Column(String(60), ForeignKey("states.id"), nullable=False)
+        places = relationship("Place", backref="cities", cascade="all, delete")
+    else:
+        name = ""
+        state_id = ""

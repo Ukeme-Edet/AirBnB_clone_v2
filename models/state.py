@@ -29,9 +29,8 @@ class State(BaseModel, Base):
 
     __tablename__ = "states"
     name = Column(String(128), nullable=False)
-    if getenv("HBNB_TYPE_STORAGE") == "db":
-        cities = relationship("City", backref="state", cascade="all, delete")
-    else:
+    cities = relationship("City", backref="state", cascade="all, delete")
+    if getenv("HBNB_TYPE_STORAGE") != "db":
 
         @property
         def cities(self):
@@ -49,18 +48,3 @@ class State(BaseModel, Base):
                 if city.state_id == self.id:
                     city_list.append(city)
             return city_list
-
-    def __init__(self, *args, **kwargs):
-        """
-        Initializes a new instance of the State class.
-
-        Args:
-            *args: Variable length argument list.
-            **kwargs: Arbitrary keyword arguments.
-
-            If kwargs is not empty, the instance attributes are set based on\
-                the key-value pairs
-            in kwargs. Otherwise, the instance attributes are set with default\
-                values.
-            """
-        super().__init__(*args, **kwargs)

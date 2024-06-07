@@ -50,24 +50,26 @@ class DBStorage:
 
     def all(self, cls=None):
         """
-        Retrieves all objects from the database.
+        Retrieves all objects of a given class from the database.
 
         Args:
-            cls (str): The class name of the objects to retrieve. If None,\
-                retrieves all objects.
+            cls: The class of objects to retrieve. If None, retrieves all\
+                objects.
 
         Returns:
-            dict: A dictionary of objects, where the key is the object's class\
-                name and ID.
+            dict: A dictionary of objects, with the object ID as the key and\
+                the object as the value.
         """
         objects = {}
         if cls:
-            for obj in self.__session.query(eval(cls)).all():
-                objects[obj.__class__.__name__ + "." + obj.id] = obj
+            for obj in self.__session.query(cls).all():
+                key = "{}.{}".format(type(obj).__name__, obj.id)
+                objects[key] = obj
         else:
-            for table in Base.metadata.tables.keys():
-                for obj in self.__session.query(eval(table)).all():
-                    objects[obj.__class__.__name__ + "." + obj.id] = obj
+            for cls in [User, State, City, Place, Review, Amenity]:
+                for obj in self.__session.query(cls).all():
+                    key = "{}.{}".format(type(obj).__name__, obj.id)
+                    objects[key] = obj
         return objects
 
     def new(self, obj):

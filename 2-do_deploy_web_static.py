@@ -16,7 +16,8 @@ def do_deploy(archive_path):
     Deploys the web_static folder to the web servers.
 
     Args:
-        archive_path (str): The path to the compressed archive of the web_static folder.
+        archive_path (str): The path to the compressed archive of the web_static\
+            folder.
 
     Returns:
         bool: True if the deployment was successful, False otherwise.

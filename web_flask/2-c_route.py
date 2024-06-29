@@ -7,7 +7,8 @@ The application listens on 0.0.0.0, port 5000.
 Routes:
     - /: Displays "Hello HBNB!"
     - /hbnb: Displays "HBNB"
-    - /c/<text>: Displays "C " followed by the value of the text variable with underscores replaced by spaces.
+    - /c/<text>: Displays "C " followed by the value of the text variable with\
+        underscores replaced by spaces.
 """
 from flask import Flask
 
@@ -34,9 +35,9 @@ def hbnb():
 @app.route("/c/<text>")
 def c(text):
     """
-	Displays "C " followed by the value of the text variable with underscores\
-		replaced by spaces.
-	"""
+    Displays "C " followed by the value of the text variable with underscores\
+        replaced by spaces.
+    """
     return "C {}".format(text.replace("_", " "))
 
 

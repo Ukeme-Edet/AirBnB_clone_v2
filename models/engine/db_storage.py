@@ -107,3 +107,9 @@ class DBStorage:
         self.__session.configure(bind=self.__engine)
         self.__session.expire_on_commit = False
         self.__session.expire_all()
+
+    def close(self):
+        """
+        Calls remove() on the private session attribute or close() on the class
+        """
+        self.__session.close()

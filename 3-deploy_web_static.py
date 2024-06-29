@@ -12,42 +12,55 @@ env.hosts = ["100.26.229.8", "3.89.160.250"]
 
 
 def do_pack():
-    """generates a tgz archive"""
-    try:
-        date = datetime.now().strftime("%Y%m%d%H%M%S")
-        if isdir("versions") is False:
-            local("mkdir versions")
-        file_name = "versions/web_static_{}.tgz".format(date)
-        local("tar -cvzf {} web_static".format(file_name))
-        return file_name
-    except BaseException:
-        return None
+    """
+    Compresses the web_static folder into a .tgz archive.
+
+    The compressed archive is stored in the "versions" directory with a\
+        timestamped filename.
+
+    Returns:
+        str: The file path of the compressed archive.
+    """
+    local("mkdir -p versions")
+    archive_name = "versions/web_static_{}.tgz".format(
+        datetime.now().strftime("%Y%m%d%H%M%S")
+    )
+    local("tar -cvzf {} web_static".format(archive_name))
+    return archive_name
 
 
 def do_deploy(archive_path):
-    """distributes an archive to the web servers"""
-    if exists(archive_path) is False:
+    """
+    Deploys the web_static folder to the web servers.
+
+    Args:
+        archive_path (str): The path to the compressed archive of the\
+            web_static folder.
+
+    Returns:
+        bool: True if the deployment was successful, False otherwise.
+    """
+    if not exists(archive_path):
         return False
-    try:
-        file_n = archive_path.split("/")[-1]
-        no_ext = file_n.split(".")[0]
-        path = "/data/web_static/releases/"
-        put(archive_path, "/tmp/")
-        run("mkdir -p {}{}/".format(path, no_ext))
-        run("tar -xzf /tmp/{} -C {}{}/".format(file_n, path, no_ext))
-        run("rm /tmp/{}".format(file_n))
-        run("mv {0}{1}/web_static/* {0}{1}/".format(path, no_ext))
-        run("rm -rf {}{}/web_static".format(path, no_ext))
-        run("rm -rf /data/web_static/current")
-        run("ln -s {}{}/ /data/web_static/current".format(path, no_ext))
-        return True
-    except BaseException:
-        return False
+    archive_name = archive_path.split("/")[-1]
+    archive_name_no_ext = archive_name.split(".")[0]
+    archive_dir = "/data/web_static/releases/{}/".format(archive_name_no_ext)
+    put(archive_path, "/tmp/")
+    run("mkdir -p {}".format(archive_dir))
+    run("tar -xzf /tmp/{} -C {}".format(archive_name, archive_dir))
+    run("rm /tmp/{}".format(archive_name))
+    run("mv {}web_static/* {}".format(archive_dir, archive_dir))
+    run("rm -rf {}web_static".format(archive_dir))
+    run("rm -rf /data/web_static/current")
+    run("ln -s {} /data/web_static/current".format(archive_dir))
+    return True
 
 
 def deploy():
-    """creates and distributes an archive to the web servers"""
+    """
+    Creates and distributes an archive to the web servers.
+    """
     archive_path = do_pack()
-    if archive_path is None:
+    if not archive_path:
         return False
     return do_deploy(archive_path)

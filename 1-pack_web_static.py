@@ -13,7 +13,6 @@ Returns:
 """
 from fabric.api import local
 from datetime import datetime
-import os
 
 
 def do_pack():
@@ -26,15 +25,9 @@ def do_pack():
     Returns:
         str: The file path of the compressed archive.
     """
-    # Create the versions directory if it doesn't exist
-    if not os.path.exists("versions"):
-        os.makedirs("versions")
-
-    # Create the filename of the archive
-    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-    archive_path = "versions/web_static_{}.tgz".format(timestamp)
-
-    # Compress the web_static folder into a .tgz archive
-    local("tar -cvzf {} web_static".format(archive_path))
-
-    return archive_path if os.path.exists(archive_path) else None
+    local("mkdir -p versions")
+    archive_name = "versions/web_static_{}.tgz".format(
+        datetime.now().strftime("%Y%m%d%H%M%S")
+    )
+    local("tar -cvzf {} web_static".format(archive_name))
+    return archive_name

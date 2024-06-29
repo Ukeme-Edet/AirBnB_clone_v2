@@ -16,30 +16,22 @@ def do_deploy(archive_path):
     Deploys the web_static folder to the web servers.
 
     Args:
-        archive_path (str): The file path of the compressed archive.
+        archive_path (str): The path to the compressed archive of the web_static folder.
 
     Returns:
-        bool: True if successful, False otherwise.
+        bool: True if the deployment was successful, False otherwise.
     """
-    if exists(archive_path) is False:
+    if not exists(archive_path):
         return False
-    else:
-        try:
-            put(archive_path, "/tmp/")
-            """ putting the file to .tgz """
-            file_name = archive_path.split("/")[1]
-            """ splitting .tgz """
-            file_name2 = file_name.split(".")[0]
-            """ spliting archivo """
-            final_name = "/data/web_static/releases/" + file_name2 + "/"
-            run("mkdir -p " + final_name)
-            run("tar -xzf /tmp/" + file_name + " -C " + final_name)
-            run("rm /tmp/" + file_name)
-            run("mv " + final_name + "web_static/* " + final_name)
-            run("rm -rf " + final_name + "web_static")
-            run("rm -rf /data/web_static/current")
-            run("ln -s " + final_name + " /data/web_static/current")
-            print("New version deployed!")
-            return True
-        except Exception:
-            return False
+    archive_name = archive_path.split("/")[-1]
+    archive_name_no_ext = archive_name.split(".")[0]
+    archive_dir = "/data/web_static/releases/{}/".format(archive_name_no_ext)
+    put(archive_path, "/tmp/")
+    run("mkdir -p {}".format(archive_dir))
+    run("tar -xzf /tmp/{} -C {}".format(archive_name, archive_dir))
+    run("rm /tmp/{}".format(archive_name))
+    run("mv {}web_static/* {}".format(archive_dir, archive_dir))
+    run("rm -rf {}web_static".format(archive_dir))
+    run("rm -rf /data/web_static/current")
+    run("ln -s {} /data/web_static/current".format(archive_dir))
+    return True

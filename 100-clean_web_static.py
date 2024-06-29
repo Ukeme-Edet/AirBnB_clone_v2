@@ -7,7 +7,7 @@ deploy (): Creates and distributes an archive to a web server
 do_clean(): Deletes out-of-date archives
 """
 
-from fabric.operations import local, run, put, sudo
+from fabric.operations import local, run, put
 from datetime import datetime
 import os
 from fabric.api import env
